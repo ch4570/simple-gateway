@@ -1,5 +1,6 @@
 package com.example.gatewayexample.filter;
 
+import com.example.gatewayexample.domain.dto.RequestLogDto;
 import com.example.gatewayexample.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -20,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
-    private JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
     public AuthenticationFilter(JwtUtils jwtUtils) {
         super(Config.class);
@@ -50,9 +51,13 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             return tokenIsNotAvailable(response, "유효하지 않은 토큰입니다. 확인 후 다시 시도해주시기 바랍니다.");
         }
 
-        request.mutate().header("X-Authorization-Email", jwtUtils.getEmail(token));
-
         return chain.filter(exchange);
+    }
+
+
+
+    private void setCustomHeaders(ServerHttpRequest request, String headerName, String value) {
+        request.mutate().header(headerName, value);
     }
 
     private Mono<Void> tokenIsNotAvailable(ServerHttpResponse response, String message) {

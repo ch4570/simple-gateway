@@ -14,6 +14,9 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 
-
-jwt:
-  secret: 2249575275f6bcd46e31a19f6c17d5b33c2b4e7fc496c4cd81449941e3891226d00917834735a60434ab7e21b6f4388ad84e433361a0bc77417d3da3ace938d6
+management:
+  endpoint:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans

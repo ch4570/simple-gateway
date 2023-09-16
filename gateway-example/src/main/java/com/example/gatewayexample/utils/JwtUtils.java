@@ -1,13 +1,11 @@
 package com.example.gatewayexample.utils;
 
-import com.example.gatewayexample.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 import java.util.Base64;
 import java.util.Date;
 
@@ -15,18 +13,12 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtils {
 
-    private final JwtProperties properties;
-    private String secretKey;
+    private final Environment env;
 
-    @PostConstruct
-    protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(properties.getSecret().getBytes());
-    }
-
-    public boolean verifyToken(String token) {
+    public final boolean verifyToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey(secretKey)
+                    .setSigningKey(getSecretKey())
                     .parseClaimsJws(token);
 
             return claims.getBody()
@@ -37,7 +29,11 @@ public class JwtUtils {
         }
     }
 
-    public String getEmail(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    public final String getEmail(String token) {
+        return Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    private final String getSecretKey() {
+        return Base64.getEncoder().encodeToString(env.getProperty("jwt.secret").getBytes());
     }
 }

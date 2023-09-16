@@ -5,6 +5,7 @@ import com.example.userservice.dto.response.ResponseDto;
 import com.example.userservice.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final JwtUtils jwtUtils;
+    private final Environment env;
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<ResponseDto> getPost(@PathVariable("postId") String postId,
@@ -28,7 +30,7 @@ public class UserController {
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
         log.info("No Token for this request");
-
+        log.info("jwt.secret = {}", env.getProperty("jwt.secret"));
         return ResponseEntity.ok("No Token for this request");
     }
 

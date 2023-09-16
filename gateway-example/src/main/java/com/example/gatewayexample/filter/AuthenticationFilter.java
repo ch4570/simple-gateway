@@ -51,6 +51,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             return tokenIsNotAvailable(response, "유효하지 않은 토큰입니다. 확인 후 다시 시도해주시기 바랍니다.");
         }
 
+        setCustomHeaders(request, "X-Authorization-Email", jwtUtils.getEmail(token));
+
         return chain.filter(exchange);
     }
 

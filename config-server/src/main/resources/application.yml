@@ -1,0 +1,15 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+
+  cloud:
+    config:
+      server:
+        git:
+          #          uri: file:///Users/devseorex/desktop/work/git-local-repo
+          uri: https://github.com/ch4570/spring-cloud-config
+          username: ch4570@naver.com
+          password: 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

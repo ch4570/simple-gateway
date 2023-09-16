@@ -26,24 +26,24 @@ public class LoggingFilter extends AbstractGatewayFilterFactory<LoggingFilter.Co
         })));
     }
 
-    private String getHeaderByHeaderName(String headerName, ServerHttpRequest request) {
-        return request.getHeaders().get(headerName).get(0);
-    }
+//    private String getHeaderByHeaderName(String headerName, ServerHttpRequest request) {
+//        return request.getHeaders().get(headerName).get(0);
+//    }
 
     private RequestLogDto createLogDto(ServerHttpRequest request) {
         String requestPath = request.getPath().toString();
         String requestMethod = request.getMethod().toString();
         String requestClientAddress = request.getRemoteAddress().getHostString();
-        String contentType = getHeaderByHeaderName("Content-Type", request);
-        String userAgent = getHeaderByHeaderName("User-Agent", request);
+//        String contentType = getHeaderByHeaderName("Content-Type", request);
+//        String userAgent = getHeaderByHeaderName("User-Agent", request);
 
 
         return RequestLogDto.builder()
                 .requestPath(requestPath)
                 .requestMethod(requestMethod)
                 .requestClientAddress(requestClientAddress)
-                .contentType(contentType)
-                .userAgent(userAgent)
+//                .contentType(contentType)
+//                .userAgent(userAgent)
                 .build();
     }
 

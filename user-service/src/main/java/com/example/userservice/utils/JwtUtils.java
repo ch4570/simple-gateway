@@ -1,13 +1,13 @@
 package com.example.userservice.utils;
 
-import com.example.userservice.properties.JwtProperties;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.Base64;
 import java.util.Date;
 
@@ -15,13 +15,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtils {
 
-    private final JwtProperties properties;
-    private String secretKey;
-
-    @PostConstruct
-    protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(properties.getSecret().getBytes());
-    }
+    private final Environment env;
 
 
     public String generateToken(String email) {
@@ -32,7 +26,11 @@ public class JwtUtils {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenPeriod))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, getSecretKey())
                 .compact();
+    }
+
+    private final String getSecretKey() {
+        return Base64.getEncoder().encodeToString(env.getProperty("jwt.secret").getBytes());
     }
 }

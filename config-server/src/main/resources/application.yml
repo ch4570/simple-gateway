@@ -11,5 +11,3 @@ spring:
         git:
           #          uri: file:///Users/devseorex/desktop/work/git-local-repo
           uri: https://github.com/ch4570/spring-cloud-config
-          username: ch4570@naver.com
-          password: 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

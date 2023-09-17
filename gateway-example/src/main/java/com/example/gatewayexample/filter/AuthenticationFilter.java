@@ -1,6 +1,6 @@
 package com.example.gatewayexample.filter;
 
-import com.example.gatewayexample.domain.dto.RequestLogDto;
+import com.example.gatewayexample.utils.AesUtils;
 import com.example.gatewayexample.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -22,10 +22,12 @@ import java.nio.charset.StandardCharsets;
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
     private final JwtUtils jwtUtils;
+    private final AesUtils aesUtils;
 
-    public AuthenticationFilter(JwtUtils jwtUtils) {
+    public AuthenticationFilter(JwtUtils jwtUtils, AesUtils aesUtils) {
         super(Config.class);
         this.jwtUtils = jwtUtils;
+        this.aesUtils = aesUtils;
     }
 
     @Override
@@ -45,7 +47,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             return tokenIsNotAvailable(response, "토큰이 누락되었습니다. 확인 후 다시 시도해주시기 바랍니다.");
         }
 
-        String token = request.getHeaders().get("Authorization").get(0);
+        String token = decodeToken(request.getHeaders().get("Authorization").get(0));
+        log.info("decodeToken = {}", token);
 
         if (!jwtUtils.verifyToken(token)) {
             return tokenIsNotAvailable(response, "유효하지 않은 토큰입니다. 확인 후 다시 시도해주시기 바랍니다.");
@@ -59,7 +62,11 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
 
     private void setCustomHeaders(ServerHttpRequest request, String headerName, String value) {
-        request.mutate().header(headerName, value);
+        request.mutate().header(headerName, aesUtils.enCodeString(value));
+    }
+
+    private String decodeToken(String token) {
+        return aesUtils.decodeString(token);
     }
 
     private Mono<Void> tokenIsNotAvailable(ServerHttpResponse response, String message) {

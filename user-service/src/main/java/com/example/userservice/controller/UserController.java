@@ -2,11 +2,11 @@ package com.example.userservice.controller;
 
 import com.example.userservice.dto.request.LoginDto;
 import com.example.userservice.dto.response.ResponseDto;
+import com.example.userservice.utils.AesUtils;
 import com.example.userservice.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,14 +17,16 @@ public class UserController {
 
     private final JwtUtils jwtUtils;
     private final Environment env;
+    private final AesUtils aesUtils;
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<ResponseDto> getPost(@PathVariable("postId") String postId,
                                                @RequestHeader("X-Authorization-Email") String userEmail) {
       log.info("postId = {}", postId);
-      log.info("userEmail = {}", userEmail);
+      String decodeEmail = aesUtils.decodeString(userEmail);
+      log.info("userEmail = {}", decodeEmail);
 
-      return ResponseEntity.ok(new ResponseDto(postId, userEmail));
+      return ResponseEntity.ok(new ResponseDto(postId, decodeEmail));
     }
 
     @GetMapping("/")
@@ -36,6 +38,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
-        return ResponseEntity.ok(jwtUtils.generateToken(loginDto.getEmail()));
+        String token = jwtUtils.generateToken(loginDto.getEmail());
+        return ResponseEntity.ok(aesUtils.enCodeString(token));
     }
 }
